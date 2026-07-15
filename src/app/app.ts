@@ -1,16 +1,15 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { LichVanNienComponent } from './lich-van-nien';
-import { DayInfo } from './lich-van-nien';
+import { DayInfo, PerpetualCalendarComponent } from './calendar';
 
 /**
- * App demo: host LichVanNienComponent và giả lập vòng đời dữ liệu với backend.
+ * App demo: host PerpetualCalendarComponent và giả lập vòng đời dữ liệu với backend.
  * Trong thực tế, thay signal `dayInfos` bằng dữ liệu từ HTTP service, và trong
  * onDayInfoChange/onDayInfoDelete gọi API lưu/xoá tương ứng.
  */
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [LichVanNienComponent],
+  imports: [PerpetualCalendarComponent],
   templateUrl: './app.html',
   styleUrl: './app.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

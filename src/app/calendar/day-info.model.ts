@@ -1,3 +1,5 @@
+import type { LunarDate } from './lunar-calendar.service';
+
 /**
  * Loại ngày — có thể mở rộng thêm bằng cách thêm giá trị vào union
  * và khai báo cấu hình hiển thị trong DAY_TYPE_CONFIG.
@@ -32,7 +34,7 @@ export interface DayInfo {
 
 export interface DayTypeConfig {
   label: string;
-  /** Tên CSS class hậu tố, đồng thời là key màu trong SCSS. */
+  /** Hậu tố CSS class, đồng thời là key màu trong SCSS. */
   cssKey: string;
 }
 
@@ -45,6 +47,22 @@ export const DAY_TYPE_CONFIG: Record<DayType, DayTypeConfig> = {
 };
 
 export const DAY_TYPES: readonly DayType[] = Object.keys(DAY_TYPE_CONFIG) as DayType[];
+
+/** 1 ô ngày trên lưới lịch. */
+export interface CalendarCell {
+  date: Date;
+  /** "YYYY-MM-DD" — khoá để map với DayInfo. */
+  iso: string;
+  solarDay: number;
+  lunar: LunarDate;
+  /** Nhãn âm lịch: "2", hoặc "1/6" khi mùng 1, "1/6n" khi tháng nhuận. */
+  lunarLabel: string;
+  /** Ô thuộc tháng đang xem hay là ngày lấp của tháng kề. */
+  isCurrentMonth: boolean;
+  isToday: boolean;
+  isSunday: boolean;
+  info?: DayInfo;
+}
 
 /** Format 1 Date (giờ địa phương) thành "YYYY-MM-DD". */
 export function toIsoDate(d: Date): string {

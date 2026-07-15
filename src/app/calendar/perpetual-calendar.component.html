@@ -1,0 +1,72 @@
+<div class="calendar">
+  <header class="calendar__header">
+    <button matIconButton type="button" (click)="prevMonth()" aria-label="Tháng trước">
+      &#10094;
+    </button>
+
+    <div class="calendar__title">
+      <h2>{{ title() }}</h2>
+      <p class="calendar__year-can-chi">{{ yearCanChi() }}</p>
+    </div>
+
+    <button matIconButton type="button" (click)="nextMonth()" aria-label="Tháng sau">
+      &#10095;
+    </button>
+  </header>
+
+  <div class="calendar__toolbar">
+    <button matButton="outlined" type="button" (click)="goToday()">Hôm nay</button>
+  </div>
+
+  <div class="calendar__grid" role="grid">
+    @for (weekday of weekdays; track weekday) {
+      <div
+        class="calendar__weekday"
+        [class.calendar__weekday--sunday]="weekday === 'CN'"
+        role="columnheader"
+      >
+        {{ weekday }}
+      </div>
+    }
+
+    @for (cell of cells(); track cell.iso) {
+      <button
+        type="button"
+        class="calendar__cell"
+        role="gridcell"
+        [class.calendar__cell--outside]="!cell.isCurrentMonth"
+        [class.calendar__cell--today]="cell.isToday"
+        [class.calendar__cell--sunday]="cell.isSunday"
+        [class.calendar__cell--readonly]="!editable()"
+        [attr.aria-label]="cell.iso"
+        (click)="onCellClick(cell)"
+      >
+        <span class="calendar__solar-day">{{ cell.solarDay }}</span>
+        <span class="calendar__lunar-day">{{ cell.lunarLabel }}</span>
+        @if (cell.info; as info) {
+          <span
+            class="calendar__badge calendar__badge--{{ dayTypeConfig[info.dayType].cssKey }}"
+            [title]="info.note || info.name || dayTypeConfig[info.dayType].label"
+          >
+            {{ info.name || dayTypeConfig[info.dayType].label }}
+          </span>
+        }
+      </button>
+    }
+  </div>
+
+  <footer class="calendar__legend">
+    <span class="calendar__legend-item">
+      <span class="calendar__legend-dot calendar__legend-dot--sunday"></span> Chủ nhật
+    </span>
+    <span class="calendar__legend-item">
+      <span class="calendar__legend-dot calendar__legend-dot--today"></span> Hôm nay
+    </span>
+    <span class="calendar__legend-item">
+      <span class="calendar__legend-dot calendar__legend-dot--holiday"></span> Ngày nghỉ lễ
+    </span>
+    <span class="calendar__legend-item">
+      <span class="calendar__legend-dot calendar__legend-dot--note"></span> Ghi chú
+    </span>
+  </footer>
+</div>

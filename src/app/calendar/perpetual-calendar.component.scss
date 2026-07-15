@@ -1,0 +1,191 @@
+// Màu nền/chữ/viền đọc từ Material system tokens (--mat-sys-*) do mat.theme()
+// của app cung cấp, nên component tự khớp theme + dark mode của Angular Material.
+// Chỉ màu badge theo loại ngày là biến riêng (--calendar-*) để app override.
+:host {
+  --calendar-working: #2e7d32;
+  --calendar-weekend: #ef6c00;
+  --calendar-holiday: #c62828;
+  --calendar-leave: #6a1b9a;
+  --calendar-note: #1565c0;
+
+  display: block;
+  color: var(--mat-sys-on-surface);
+}
+
+.calendar {
+  max-width: 56rem;
+  margin: 0 auto;
+  padding: 1rem;
+  background: var(--mat-sys-surface);
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 0.75rem;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+
+  &__title {
+    text-align: center;
+
+    h2 {
+      margin: 0;
+      font-size: 1.25rem;
+    }
+  }
+
+  &__year-can-chi {
+    margin: 0.15rem 0 0;
+    font-size: 0.85rem;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  &__toolbar {
+    display: flex;
+    justify-content: center;
+    margin: 0.25rem 0 0.75rem;
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 0.25rem;
+  }
+
+  &__weekday {
+    padding: 0.4rem 0;
+    text-align: center;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--mat-sys-on-surface-variant);
+
+    &--sunday {
+      color: var(--mat-sys-error);
+    }
+  }
+
+  &__cell {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.1rem;
+    min-height: 4.5rem;
+    padding: 0.35rem 0.15rem;
+    border: 1px solid var(--mat-sys-outline-variant);
+    border-radius: 0.5rem;
+    background: var(--mat-sys-surface-container-low);
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+
+    &:hover {
+      border-color: var(--mat-sys-primary);
+    }
+
+    &--readonly {
+      cursor: default;
+
+      &:hover {
+        border-color: var(--mat-sys-outline-variant);
+      }
+    }
+
+    &--outside {
+      opacity: 0.35;
+    }
+
+    // Hôm nay: viền nổi bật (accent border)
+    &--today {
+      border: 2px solid var(--mat-sys-primary);
+      background: var(--mat-sys-primary-container);
+      color: var(--mat-sys-on-primary-container);
+    }
+  }
+
+  &__solar-day {
+    font-size: 1.15rem;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  &__cell--sunday &__solar-day {
+    color: var(--mat-sys-error);
+  }
+
+  &__lunar-day {
+    font-size: 0.72rem;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  &__badge {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    margin-top: auto;
+    padding: 0.05rem 0.35rem;
+    border-radius: 0.6rem;
+    font-size: 0.62rem;
+    font-weight: 600;
+    color: #fff;
+
+    &--working { background: var(--calendar-working); }
+    &--weekend { background: var(--calendar-weekend); }
+    &--holiday { background: var(--calendar-holiday); }
+    &--leave   { background: var(--calendar-leave); }
+    &--note    { background: var(--calendar-note); }
+  }
+
+  &__legend {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem;
+    margin-top: 0.75rem;
+    font-size: 0.75rem;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  &__legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+
+  &__legend-dot {
+    width: 0.7rem;
+    height: 0.7rem;
+    border-radius: 50%;
+
+    &--sunday { background: var(--mat-sys-error); }
+    &--today {
+      background: var(--mat-sys-primary-container);
+      border: 2px solid var(--mat-sys-primary);
+    }
+    &--holiday { background: var(--calendar-holiday); }
+    &--note { background: var(--calendar-note); }
+  }
+}
+
+// Responsive: màn hình hẹp thu gọn ô ngày
+@media (max-width: 480px) {
+  .calendar {
+    padding: 0.6rem;
+
+    &__cell {
+      min-height: 3.4rem;
+      border-radius: 0.35rem;
+    }
+
+    &__solar-day {
+      font-size: 0.95rem;
+    }
+
+    &__badge {
+      font-size: 0.55rem;
+    }
+  }
+}

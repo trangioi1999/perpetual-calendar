@@ -7,44 +7,25 @@ import {
   output,
   signal,
 } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { LunarCalendarService, LunarDate } from './lunar-calendar.service';
+import { MatButtonModule } from '@angular/material/button';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import {
-  DAY_TYPES,
+  DayEditorDialogComponent,
+  DayEditorResult,
+} from './day-editor-dialog.component';
+import {
+  CalendarCell,
   DAY_TYPE_CONFIG,
   DayInfo,
-  DayType,
   toIsoDate,
 } from './day-info.model';
-
-/** 1 ô ngày trên lưới lịch. */
-export interface CalendarCell {
-  date: Date;
-  /** "YYYY-MM-DD" — khoá để map với DayInfo. */
-  iso: string;
-  solarDay: number;
-  lunar: LunarDate;
-  /** Nhãn âm lịch: "2", hoặc "1/6" khi mùng 1, "1/6n" khi tháng nhuận. */
-  lunarLabel: string;
-  /** Ô thuộc tháng đang xem hay là ngày lấp của tháng kề. */
-  isCurrentMonth: boolean;
-  isToday: boolean;
-  isSunday: boolean;
-  info?: DayInfo;
-}
-
-interface EditorState {
-  cell: CalendarCell;
-  dayType: DayType;
-  name: string;
-  note: string;
-}
+import { LunarCalendarService, LunarDate } from './lunar-calendar.service';
 
 /**
  * Lịch vạn niên xem theo tháng — common UI component, dùng lại được ở mọi app:
  *
  * ```html
- * <app-lich-van-nien
+ * <app-perpetual-calendar
  *   [dayInfos]="dayInfos()"
  *   [editable]="true"
  *   (dayInfoChange)="onSave($event)"
@@ -53,20 +34,23 @@ interface EditorState {
  * ```
  *
  * - `dayInfos`: danh sách note/ngày nghỉ từ backend, hiển thị badge trên ô ngày.
- * - Khi `editable`, click vào ô ngày sẽ mở panel chỉnh sửa loại ngày + ghi chú;
+ * - Khi `editable`, click vào ô ngày sẽ mở MatDialog chỉnh sửa loại ngày + ghi chú;
  *   component emit `dayInfoChange` (upsert) / `dayInfoDelete` — việc gọi API
  *   lưu trữ do phía sử dụng quyết định, component không tự gọi HTTP.
+ * - Màu sắc đọc từ Material system tokens (--mat-sys-*) nên tự khớp theme
+ *   Angular Material của app, kể cả dark mode.
  */
 @Component({
-  selector: 'app-lich-van-nien',
+  selector: 'app-perpetual-calendar',
   standalone: true,
-  imports: [FormsModule],
-  templateUrl: './lich-van-nien.component.html',
-  styleUrl: './lich-van-nien.component.scss',
+  imports: [MatButtonModule, MatDialogModule],
+  templateUrl: './perpetual-calendar.component.html',
+  styleUrl: './perpetual-calendar.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class LichVanNienComponent {
+export class PerpetualCalendarComponent {
   private readonly lunarService = inject(LunarCalendarService);
+  private readonly dialog = inject(MatDialog);
 
   /** Dữ liệu ngày (note, ngày nghỉ...) do bên ngoài truyền vào. */
   readonly dayInfos = input<DayInfo[]>([]);
@@ -83,7 +67,6 @@ export class LichVanNienComponent {
   readonly monthChange = output<{ month: number; year: number }>();
 
   readonly weekdays = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
-  readonly dayTypes = DAY_TYPES;
   readonly dayTypeConfig = DAY_TYPE_CONFIG;
 
   /** Tháng (1-12) / năm dương lịch đang xem. */
@@ -92,9 +75,6 @@ export class LichVanNienComponent {
 
   /** Các chỉnh sửa cục bộ, phủ lên dayInfos() để UI phản hồi ngay khi lưu. */
   private readonly localEdits = signal<ReadonlyMap<string, DayInfo | null>>(new Map());
-
-  /** Panel chỉnh sửa đang mở (null = đóng). */
-  readonly editor = signal<EditorState | null>(null);
 
   readonly title = computed(() => `Tháng ${this.viewMonth()} năm ${this.viewYear()}`);
 
@@ -171,7 +151,6 @@ export class LichVanNienComponent {
     const now = new Date();
     this.viewMonth.set(now.getMonth() + 1);
     this.viewYear.set(now.getFullYear());
-    this.closeEditor();
     this.monthChange.emit({ month: this.viewMonth(), year: this.viewYear() });
   }
 
@@ -179,7 +158,6 @@ export class LichVanNienComponent {
     const d = new Date(this.viewYear(), this.viewMonth() - 1 + delta, 1);
     this.viewMonth.set(d.getMonth() + 1);
     this.viewYear.set(d.getFullYear());
-    this.closeEditor();
     this.monthChange.emit({ month: this.viewMonth(), year: this.viewYear() });
   }
 
@@ -187,54 +165,35 @@ export class LichVanNienComponent {
     if (!this.editable()) {
       return;
     }
-    this.editor.set({
-      cell,
-      dayType: cell.info?.dayType ?? (cell.isSunday ? 'WEEKEND' : 'WORKING'),
-      name: cell.info?.name ?? '',
-      note: cell.info?.note ?? '',
-    });
+    const ref = this.dialog.open<DayEditorDialogComponent, { cell: CalendarCell }, DayEditorResult>(
+      DayEditorDialogComponent,
+      { data: { cell }, width: '22.5rem' },
+    );
+    ref.afterClosed().subscribe((result) => this.onEditorClosed(cell, result));
   }
 
-  saveEditor(): void {
-    const state = this.editor();
-    if (!state) {
+  private onEditorClosed(cell: CalendarCell, result: DayEditorResult | undefined): void {
+    if (!result) {
       return;
     }
-    const existing = state.cell.info;
+    if (result.action === 'delete') {
+      if (cell.info) {
+        this.applyLocalEdit(cell.iso, null);
+        this.dayInfoDelete.emit(cell.info);
+      }
+      return;
+    }
     const info: DayInfo = {
-      id: existing?.id ?? this.generateId(),
-      date: state.cell.iso,
-      year: state.cell.date.getFullYear(),
-      dayType: state.dayType,
-      name: state.name.trim(),
-      note: state.note.trim() || undefined,
+      id: cell.info?.id ?? this.generateId(),
+      date: cell.iso,
+      year: cell.date.getFullYear(),
+      dayType: result.dayType,
+      name: result.name.trim(),
+      note: result.note.trim() || undefined,
       isGenerated: false,
     };
-    this.applyLocalEdit(state.cell.iso, info);
+    this.applyLocalEdit(cell.iso, info);
     this.dayInfoChange.emit(info);
-    this.closeEditor();
-  }
-
-  deleteEditor(): void {
-    const state = this.editor();
-    const existing = state?.cell.info;
-    if (!state || !existing) {
-      return;
-    }
-    this.applyLocalEdit(state.cell.iso, null);
-    this.dayInfoDelete.emit(existing);
-    this.closeEditor();
-  }
-
-  closeEditor(): void {
-    this.editor.set(null);
-  }
-
-  updateEditor(patch: Partial<Omit<EditorState, 'cell'>>): void {
-    const state = this.editor();
-    if (state) {
-      this.editor.set({ ...state, ...patch });
-    }
   }
 
   private applyLocalEdit(iso: string, info: DayInfo | null): void {

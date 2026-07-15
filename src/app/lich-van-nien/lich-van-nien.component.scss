@@ -1,0 +1,383 @@
+// Toàn bộ màu lấy qua CSS variables (khai báo fallback tại :host) nên app dùng
+// component có thể override theo design system riêng, và hỗ trợ dark mode.
+:host {
+  --lvn-bg: #ffffff;
+  --lvn-surface: #f8f9fb;
+  --lvn-border: #e3e6ec;
+  --lvn-text: #1f2430;
+  --lvn-text-muted: #8a90a0;
+  --lvn-sunday: #e0342c;
+  --lvn-accent: #1a73e8;
+  --lvn-accent-soft: #fdeeca;
+  --lvn-holiday: #e0342c;
+  --lvn-weekend: #f2994a;
+  --lvn-working: #27ae60;
+  --lvn-leave: #9b51e0;
+  --lvn-note: #1a73e8;
+  --lvn-shadow: rgba(20, 24, 40, 0.14);
+
+  display: block;
+  color: var(--lvn-text);
+  font-family: inherit;
+}
+
+@media (prefers-color-scheme: dark) {
+  :host {
+    --lvn-bg: #171a21;
+    --lvn-surface: #1f232d;
+    --lvn-border: #323847;
+    --lvn-text: #e8eaf0;
+    --lvn-text-muted: #8f96a8;
+    --lvn-sunday: #ff6b61;
+    --lvn-accent: #6ba4ff;
+    --lvn-accent-soft: #3a3320;
+    --lvn-shadow: rgba(0, 0, 0, 0.5);
+  }
+}
+
+// App chủ động chọn theme qua attribute (thắng cả prefers-color-scheme).
+:host-context([data-theme='dark']) {
+  --lvn-bg: #171a21;
+  --lvn-surface: #1f232d;
+  --lvn-border: #323847;
+  --lvn-text: #e8eaf0;
+  --lvn-text-muted: #8f96a8;
+  --lvn-sunday: #ff6b61;
+  --lvn-accent: #6ba4ff;
+  --lvn-accent-soft: #3a3320;
+  --lvn-shadow: rgba(0, 0, 0, 0.5);
+}
+
+:host-context([data-theme='light']) {
+  --lvn-bg: #ffffff;
+  --lvn-surface: #f8f9fb;
+  --lvn-border: #e3e6ec;
+  --lvn-text: #1f2430;
+  --lvn-text-muted: #8a90a0;
+  --lvn-sunday: #e0342c;
+  --lvn-accent: #1a73e8;
+  --lvn-accent-soft: #fdeeca;
+  --lvn-shadow: rgba(20, 24, 40, 0.14);
+}
+
+.lvn {
+  position: relative;
+  max-width: 56rem;
+  margin: 0 auto;
+  padding: 1rem;
+  background: var(--lvn-bg);
+  border: 1px solid var(--lvn-border);
+  border-radius: 0.75rem;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  &__title {
+    text-align: center;
+
+    h2 {
+      margin: 0;
+      font-size: 1.25rem;
+    }
+  }
+
+  &__can-chi {
+    margin: 0.15rem 0 0;
+    font-size: 0.85rem;
+    color: var(--lvn-text-muted);
+  }
+
+  &__nav {
+    width: 2.25rem;
+    height: 2.25rem;
+    border: 1px solid var(--lvn-border);
+    border-radius: 50%;
+    background: var(--lvn-surface);
+    color: var(--lvn-text);
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background 0.15s;
+
+    &:hover {
+      background: var(--lvn-border);
+    }
+  }
+
+  &__today-btn {
+    display: block;
+    margin: 0 auto 0.75rem;
+    padding: 0.25rem 0.9rem;
+    border: 1px solid var(--lvn-border);
+    border-radius: 1rem;
+    background: var(--lvn-surface);
+    color: var(--lvn-accent);
+    font-size: 0.8rem;
+    cursor: pointer;
+
+    &:hover {
+      background: var(--lvn-border);
+    }
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 0.25rem;
+  }
+
+  &__weekday {
+    padding: 0.4rem 0;
+    text-align: center;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--lvn-text-muted);
+
+    &--sunday {
+      color: var(--lvn-sunday);
+    }
+  }
+
+  &__cell {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.1rem;
+    min-height: 4.5rem;
+    padding: 0.35rem 0.15rem;
+    border: 1px solid var(--lvn-border);
+    border-radius: 0.5rem;
+    background: var(--lvn-surface);
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+
+    &:hover {
+      border-color: var(--lvn-accent);
+    }
+
+    &--readonly {
+      cursor: default;
+
+      &:hover {
+        border-color: var(--lvn-border);
+      }
+    }
+
+    &--outside {
+      opacity: 0.35;
+    }
+
+    // Hôm nay: viền nổi bật (accent border)
+    &--today {
+      border: 2px solid var(--lvn-accent);
+      background: var(--lvn-accent-soft);
+    }
+  }
+
+  &__solar {
+    font-size: 1.15rem;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  &__cell--sunday &__solar {
+    color: var(--lvn-sunday);
+  }
+
+  &__lunar {
+    font-size: 0.72rem;
+    color: var(--lvn-text-muted);
+  }
+
+  &__badge {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    margin-top: auto;
+    padding: 0.05rem 0.35rem;
+    border-radius: 0.6rem;
+    font-size: 0.62rem;
+    font-weight: 600;
+    color: #fff;
+
+    &--working { background: var(--lvn-working); }
+    &--weekend { background: var(--lvn-weekend); }
+    &--holiday { background: var(--lvn-holiday); }
+    &--leave   { background: var(--lvn-leave); }
+    &--note    { background: var(--lvn-note); }
+  }
+
+  &__legend {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem;
+    margin-top: 0.75rem;
+    font-size: 0.75rem;
+    color: var(--lvn-text-muted);
+  }
+
+  &__legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+
+  &__legend-dot {
+    width: 0.7rem;
+    height: 0.7rem;
+    border-radius: 50%;
+
+    &--sunday { background: var(--lvn-sunday); }
+    &--today {
+      background: var(--lvn-accent-soft);
+      border: 2px solid var(--lvn-accent);
+    }
+    &--holiday { background: var(--lvn-holiday); }
+    &--note { background: var(--lvn-note); }
+  }
+
+  // ----- Editor -----
+  &__backdrop {
+    position: fixed;
+    inset: 0;
+    background: var(--lvn-shadow);
+    z-index: 10;
+  }
+
+  &__editor {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 11;
+    width: min(22rem, calc(100vw - 2rem));
+    padding: 1.1rem;
+    background: var(--lvn-bg);
+    border: 1px solid var(--lvn-border);
+    border-radius: 0.75rem;
+    box-shadow: 0 0.75rem 2rem var(--lvn-shadow);
+  }
+
+  &__editor-title {
+    margin: 0 0 0.85rem;
+    font-size: 1rem;
+
+    small {
+      display: block;
+      margin-top: 0.15rem;
+      font-weight: 400;
+      color: var(--lvn-text-muted);
+    }
+  }
+
+  &__field {
+    display: block;
+    margin-bottom: 0.7rem;
+
+    span {
+      display: block;
+      margin-bottom: 0.25rem;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--lvn-text-muted);
+    }
+
+    select,
+    input,
+    textarea {
+      width: 100%;
+      padding: 0.45rem 0.6rem;
+      border: 1px solid var(--lvn-border);
+      border-radius: 0.45rem;
+      background: var(--lvn-surface);
+      color: var(--lvn-text);
+      font: inherit;
+      font-size: 0.9rem;
+      box-sizing: border-box;
+
+      &:focus {
+        outline: 2px solid var(--lvn-accent);
+        outline-offset: -1px;
+      }
+    }
+
+    textarea {
+      resize: vertical;
+    }
+  }
+
+  &__editor-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.9rem;
+  }
+
+  &__spacer {
+    flex: 1;
+  }
+
+  &__btn {
+    padding: 0.4rem 0.95rem;
+    border: 1px solid var(--lvn-border);
+    border-radius: 0.45rem;
+    background: var(--lvn-surface);
+    color: var(--lvn-text);
+    font-size: 0.85rem;
+    cursor: pointer;
+
+    &:hover {
+      background: var(--lvn-border);
+    }
+
+    &--primary {
+      border-color: var(--lvn-accent);
+      background: var(--lvn-accent);
+      color: #fff;
+
+      &:hover {
+        filter: brightness(1.08);
+        background: var(--lvn-accent);
+      }
+    }
+
+    &--danger {
+      border-color: var(--lvn-sunday);
+      background: transparent;
+      color: var(--lvn-sunday);
+
+      &:hover {
+        background: var(--lvn-sunday);
+        color: #fff;
+      }
+    }
+  }
+}
+
+// Responsive: màn hình hẹp thu gọn ô ngày
+@media (max-width: 480px) {
+  .lvn {
+    padding: 0.6rem;
+
+    &__cell {
+      min-height: 3.4rem;
+      border-radius: 0.35rem;
+    }
+
+    &__solar {
+      font-size: 0.95rem;
+    }
+
+    &__badge {
+      font-size: 0.55rem;
+    }
+  }
+}

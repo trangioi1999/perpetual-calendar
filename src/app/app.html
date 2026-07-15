@@ -1,0 +1,9 @@
+<main class="page">
+  <h1>Lịch vạn niên</h1>
+  <app-lich-van-nien
+    [dayInfos]="dayInfos()"
+    [editable]="true"
+    (dayInfoChange)="onDayInfoChange($event)"
+    (dayInfoDelete)="onDayInfoDelete($event)"
+  />
+</main>

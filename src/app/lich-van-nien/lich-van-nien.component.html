@@ -1,0 +1,124 @@
+<div class="lvn">
+  <header class="lvn__header">
+    <button type="button" class="lvn__nav" (click)="prevMonth()" aria-label="Tháng trước">
+      &#10094;
+    </button>
+
+    <div class="lvn__title">
+      <h2>{{ title() }}</h2>
+      <p class="lvn__can-chi">{{ yearCanChi() }}</p>
+    </div>
+
+    <button type="button" class="lvn__nav" (click)="nextMonth()" aria-label="Tháng sau">
+      &#10095;
+    </button>
+  </header>
+
+  <button type="button" class="lvn__today-btn" (click)="goToday()">Hôm nay</button>
+
+  <div class="lvn__grid" role="grid">
+    @for (weekday of weekdays; track weekday) {
+      <div class="lvn__weekday" [class.lvn__weekday--sunday]="weekday === 'CN'" role="columnheader">
+        {{ weekday }}
+      </div>
+    }
+
+    @for (cell of cells(); track cell.iso) {
+      <button
+        type="button"
+        class="lvn__cell"
+        role="gridcell"
+        [class.lvn__cell--outside]="!cell.isCurrentMonth"
+        [class.lvn__cell--today]="cell.isToday"
+        [class.lvn__cell--sunday]="cell.isSunday"
+        [class.lvn__cell--readonly]="!editable()"
+        [attr.aria-label]="cell.iso"
+        (click)="onCellClick(cell)"
+      >
+        <span class="lvn__solar">{{ cell.solarDay }}</span>
+        <span class="lvn__lunar">{{ cell.lunarLabel }}</span>
+        @if (cell.info; as info) {
+          <span
+            class="lvn__badge lvn__badge--{{ dayTypeConfig[info.dayType].cssKey }}"
+            [title]="info.note || info.name || dayTypeConfig[info.dayType].label"
+          >
+            {{ info.name || dayTypeConfig[info.dayType].label }}
+          </span>
+        }
+      </button>
+    }
+  </div>
+
+  <footer class="lvn__legend">
+    <span class="lvn__legend-item">
+      <span class="lvn__legend-dot lvn__legend-dot--sunday"></span> Chủ nhật
+    </span>
+    <span class="lvn__legend-item">
+      <span class="lvn__legend-dot lvn__legend-dot--today"></span> Hôm nay
+    </span>
+    <span class="lvn__legend-item">
+      <span class="lvn__legend-dot lvn__legend-dot--holiday"></span> Ngày nghỉ lễ
+    </span>
+    <span class="lvn__legend-item">
+      <span class="lvn__legend-dot lvn__legend-dot--note"></span> Ghi chú
+    </span>
+  </footer>
+
+  @if (editor(); as state) {
+    <div class="lvn__backdrop" (click)="closeEditor()"></div>
+    <div class="lvn__editor" role="dialog" aria-modal="true" aria-label="Chỉnh sửa ngày">
+      <h3 class="lvn__editor-title">
+        Ngày {{ state.cell.solarDay }}/{{ state.cell.date.getMonth() + 1 }}/{{
+          state.cell.date.getFullYear()
+        }}
+        <small>(Âm lịch: {{ state.cell.lunar.day }}/{{ state.cell.lunar.month
+          }}{{ state.cell.lunar.isLeapMonth ? 'n' : '' }})</small>
+      </h3>
+
+      <label class="lvn__field">
+        <span>Loại ngày</span>
+        <select
+          [ngModel]="state.dayType"
+          (ngModelChange)="updateEditor({ dayType: $event })"
+        >
+          @for (type of dayTypes; track type) {
+            <option [value]="type">{{ dayTypeConfig[type].label }}</option>
+          }
+        </select>
+      </label>
+
+      <label class="lvn__field">
+        <span>Tên / nhãn</span>
+        <input
+          type="text"
+          placeholder="Ví dụ: Quốc khánh 2/9"
+          [ngModel]="state.name"
+          (ngModelChange)="updateEditor({ name: $event })"
+        />
+      </label>
+
+      <label class="lvn__field">
+        <span>Ghi chú</span>
+        <textarea
+          rows="3"
+          placeholder="Ghi chú thêm..."
+          [ngModel]="state.note"
+          (ngModelChange)="updateEditor({ note: $event })"
+        ></textarea>
+      </label>
+
+      <div class="lvn__editor-actions">
+        @if (state.cell.info) {
+          <button type="button" class="lvn__btn lvn__btn--danger" (click)="deleteEditor()">
+            Xoá
+          </button>
+        }
+        <span class="lvn__spacer"></span>
+        <button type="button" class="lvn__btn" (click)="closeEditor()">Huỷ</button>
+        <button type="button" class="lvn__btn lvn__btn--primary" (click)="saveEditor()">
+          Lưu
+        </button>
+      </div>
+    </div>
+  }
+</div>

@@ -1,0 +1,15 @@
+:root {
+  color-scheme: light dark;
+}
+
+body {
+  margin: 0;
+  font-family:
+    'Segoe UI',
+    Roboto,
+    'Helvetica Neue',
+    Arial,
+    sans-serif;
+  background: light-dark(#f2f4f8, #10131a);
+  color: light-dark(#1f2430, #e8eaf0);
+}

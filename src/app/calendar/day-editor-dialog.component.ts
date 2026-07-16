@@ -107,8 +107,7 @@ export class DayEditorDialogComponent {
   readonly dayTypes = DAY_TYPES;
   readonly dayTypeConfig = DAY_TYPE_CONFIG;
 
-  dayType: DayType =
-    this.data.cell.info?.dayType ?? (this.data.cell.isSunday ? 'WEEKEND' : 'WORKING');
+  dayType: DayType = this.data.cell.info?.dayType ?? 'WORKING';
   name = this.data.cell.info?.name ?? '';
   note = this.data.cell.info?.note ?? '';
 

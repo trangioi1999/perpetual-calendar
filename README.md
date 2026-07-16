@@ -61,8 +61,16 @@ khi user chỉnh sửa, nên ghép được với bất kỳ backend/state manag
 }
 ```
 
-`dayType`: `WORKING | WEEKEND | HOLIDAY | LEAVE | NOTE` — thêm loại mới bằng cách mở
-rộng union `DayType` và khai báo nhãn/màu trong `DAY_TYPE_CONFIG`.
+`dayType` gồm 3 loại:
+
+| Type | Ý nghĩa |
+| --- | --- |
+| `WORKING` | Ngày làm việc bình thường |
+| `HOLIDAY` | Ngày nghỉ / lễ |
+| `COMPENSATORY` | Ngày làm bù (ví dụ đi làm bù cho ngày lễ) |
+
+Cần thêm loại mới thì mở rộng union `DayType`, khai báo nhãn trong
+`DAY_TYPE_CONFIG` và thêm biến màu `--calendar-<cssKey>` trong SCSS.
 
 ### Theme
 

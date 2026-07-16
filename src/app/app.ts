@@ -17,28 +17,28 @@ import { DayInfo, PerpetualCalendarComponent } from './calendar';
 export class App {
   readonly dayInfos = signal<DayInfo[]>([
     {
-      id: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
+      id: 'b2f0c9a1-0000-4000-8000-000000000709',
+      date: '2026-07-09',
+      year: 2026,
+      dayType: 'HOLIDAY',
+      name: 'Nghỉ lễ',
+      isGenerated: true,
+    },
+    {
+      id: 'b2f0c9a1-0000-4000-8000-000000000711',
       date: '2026-07-11',
       year: 2026,
-      dayType: 'NOTE',
-      name: 'Ngày dân số thế giới',
+      dayType: 'COMPENSATORY',
+      name: 'Làm bù',
       isGenerated: true,
     },
     {
-      id: 'b2f0c9a1-0000-4000-8000-000000000027',
-      date: '2026-07-27',
+      id: 'b2f0c9a1-0000-4000-8000-000000000717',
+      date: '2026-07-17',
       year: 2026,
-      dayType: 'NOTE',
-      name: 'Ngày Thương binh liệt sĩ',
-      isGenerated: true,
-    },
-    {
-      id: 'b2f0c9a1-0000-4000-8000-000000000028',
-      date: '2026-07-28',
-      year: 2026,
-      dayType: 'NOTE',
-      name: 'Ngày thành lập công đoàn VN',
-      isGenerated: true,
+      dayType: 'WORKING',
+      name: 'Làm việc ở nhà',
+      isGenerated: false,
     },
     {
       id: 'b2f0c9a1-0000-4000-8000-000000000902',
@@ -47,22 +47,6 @@ export class App {
       dayType: 'HOLIDAY',
       name: 'Quốc khánh',
       isGenerated: true,
-    },
-    {
-      id: 'b2f0c9a1-0000-4000-8000-000000000709',
-      date: '2026-07-09',
-      year: 2026,
-      dayType: 'LEAVE',
-      name: 'Nghỉ phép',
-      isGenerated: false,
-    },
-    {
-      id: 'b2f0c9a1-0000-4000-8000-000000000717',
-      date: '2026-07-17',
-      year: 2026,
-      dayType: 'COMPENSATORY',
-      name: 'Làm việc ở nhà',
-      isGenerated: false,
     },
   ]);
 

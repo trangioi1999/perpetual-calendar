@@ -3,11 +3,8 @@
 // Chỉ màu chip theo loại ngày là biến riêng (--calendar-*) để app override.
 :host {
   --calendar-working: #16a34a;
-  --calendar-weekend: #64748b;
   --calendar-holiday: #d97706;
-  --calendar-leave: #ca8a04;
   --calendar-compensatory: #2563eb;
-  --calendar-note: #7c3aed;
 
   display: block;
   color: var(--mat-sys-on-surface);
@@ -51,11 +48,8 @@
     border-radius: 50%;
 
     &--working      { background: var(--calendar-working); }
-    &--weekend      { background: var(--calendar-weekend); }
     &--holiday      { background: var(--calendar-holiday); }
-    &--leave        { background: var(--calendar-leave); }
     &--compensatory { background: var(--calendar-compensatory); }
-    &--note         { background: var(--calendar-note); }
   }
 
   &__controls {
@@ -280,11 +274,8 @@
     font-weight: 600;
 
     &--working      { color: var(--calendar-working); }
-    &--weekend      { color: var(--calendar-weekend); }
     &--holiday      { color: var(--calendar-holiday); }
-    &--leave        { color: var(--calendar-leave); }
     &--compensatory { color: var(--calendar-compensatory); }
-    &--note         { color: var(--calendar-note); }
 
     background: color-mix(in srgb, currentColor 14%, transparent);
   }

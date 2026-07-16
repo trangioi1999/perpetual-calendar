@@ -15,6 +15,7 @@ import {
 } from './day-editor-dialog.component';
 import {
   CalendarCell,
+  DAY_TYPES,
   DAY_TYPE_CONFIG,
   DayInfo,
   toIsoDate,
@@ -66,8 +67,15 @@ export class PerpetualCalendarComponent {
   /** Emit khi chuyển tháng đang xem. */
   readonly monthChange = output<{ month: number; year: number }>();
 
-  readonly weekdays = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
+  /** Tuần bắt đầu Thứ 2, Chủ nhật đứng cột cuối. */
+  readonly weekdays = ['Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7', 'CN'];
   readonly dayTypeConfig = DAY_TYPE_CONFIG;
+  /** Danh sách loại ngày cho chú thích ở góc trên. */
+  readonly dayTypeEntries = DAY_TYPES.map((type) => ({
+    type,
+    ...DAY_TYPE_CONFIG[type],
+  }));
+  readonly pickerMonths = Array.from({ length: 12 }, (_, i) => i + 1);
 
   /** Tháng (1-12) / năm dương lịch đang xem. */
   readonly viewMonth = signal(this.initialDate().getMonth() + 1);
@@ -76,7 +84,11 @@ export class PerpetualCalendarComponent {
   /** Các chỉnh sửa cục bộ, phủ lên dayInfos() để UI phản hồi ngay khi lưu. */
   private readonly localEdits = signal<ReadonlyMap<string, DayInfo | null>>(new Map());
 
-  readonly title = computed(() => `Tháng ${this.viewMonth()} năm ${this.viewYear()}`);
+  /** Month picker thả xuống từ tiêu đề tháng. */
+  readonly pickerOpen = signal(false);
+  readonly pickerYear = signal(this.viewYear());
+
+  readonly title = computed(() => `Tháng ${this.viewMonth()}, ${this.viewYear()}`);
 
   /** Can chi của năm âm lịch ứng với ngày giữa tháng đang xem. */
   readonly yearCanChi = computed(() => {
@@ -116,7 +128,7 @@ export class PerpetualCalendarComponent {
 
     const firstOfMonth = new Date(year, month - 1, 1);
     const daysInMonth = new Date(year, month, 0).getDate();
-    const leadingDays = firstOfMonth.getDay(); // CN đứng cột đầu
+    const leadingDays = (firstOfMonth.getDay() + 6) % 7; // Thứ 2 đứng cột đầu
     const totalCells = Math.ceil((leadingDays + daysInMonth) / 7) * 7;
 
     const cells: CalendarCell[] = [];
@@ -158,6 +170,26 @@ export class PerpetualCalendarComponent {
     const d = new Date(this.viewYear(), this.viewMonth() - 1 + delta, 1);
     this.viewMonth.set(d.getMonth() + 1);
     this.viewYear.set(d.getFullYear());
+    this.monthChange.emit({ month: this.viewMonth(), year: this.viewYear() });
+  }
+
+  togglePicker(): void {
+    this.pickerYear.set(this.viewYear());
+    this.pickerOpen.update((open) => !open);
+  }
+
+  closePicker(): void {
+    this.pickerOpen.set(false);
+  }
+
+  shiftPickerYear(delta: number): void {
+    this.pickerYear.update((y) => y + delta);
+  }
+
+  selectMonth(month: number): void {
+    this.viewMonth.set(month);
+    this.viewYear.set(this.pickerYear());
+    this.pickerOpen.set(false);
     this.monthChange.emit({ month: this.viewMonth(), year: this.viewYear() });
   }
 

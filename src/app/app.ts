@@ -48,6 +48,22 @@ export class App {
       name: 'Quốc khánh',
       isGenerated: true,
     },
+    {
+      id: 'b2f0c9a1-0000-4000-8000-000000000709',
+      date: '2026-07-09',
+      year: 2026,
+      dayType: 'LEAVE',
+      name: 'Nghỉ phép',
+      isGenerated: false,
+    },
+    {
+      id: 'b2f0c9a1-0000-4000-8000-000000000717',
+      date: '2026-07-17',
+      year: 2026,
+      dayType: 'COMPENSATORY',
+      name: 'Làm việc ở nhà',
+      isGenerated: false,
+    },
   ]);
 
   onDayInfoChange(info: DayInfo): void {

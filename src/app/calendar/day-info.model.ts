@@ -4,7 +4,13 @@ import type { LunarDate } from './lunar-calendar.service';
  * Loại ngày — có thể mở rộng thêm bằng cách thêm giá trị vào union
  * và khai báo cấu hình hiển thị trong DAY_TYPE_CONFIG.
  */
-export type DayType = 'WORKING' | 'WEEKEND' | 'HOLIDAY' | 'LEAVE' | 'NOTE';
+export type DayType =
+  | 'WORKING'
+  | 'WEEKEND'
+  | 'HOLIDAY'
+  | 'LEAVE'
+  | 'COMPENSATORY'
+  | 'NOTE';
 
 /**
  * Thông tin gắn với 1 ngày trên lịch (ngày nghỉ, ghi chú, sự kiện...).
@@ -41,8 +47,9 @@ export interface DayTypeConfig {
 export const DAY_TYPE_CONFIG: Record<DayType, DayTypeConfig> = {
   WORKING: { label: 'Ngày làm việc', cssKey: 'working' },
   WEEKEND: { label: 'Cuối tuần', cssKey: 'weekend' },
-  HOLIDAY: { label: 'Ngày nghỉ lễ', cssKey: 'holiday' },
+  HOLIDAY: { label: 'Ngày nghỉ/Lễ', cssKey: 'holiday' },
   LEAVE: { label: 'Nghỉ phép', cssKey: 'leave' },
+  COMPENSATORY: { label: 'Ngày làm bù', cssKey: 'compensatory' },
   NOTE: { label: 'Ghi chú', cssKey: 'note' },
 };
 

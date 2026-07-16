@@ -1,191 +1,329 @@
 // Màu nền/chữ/viền đọc từ Material system tokens (--mat-sys-*) do mat.theme()
 // của app cung cấp, nên component tự khớp theme + dark mode của Angular Material.
-// Chỉ màu badge theo loại ngày là biến riêng (--calendar-*) để app override.
+// Chỉ màu chip theo loại ngày là biến riêng (--calendar-*) để app override.
 :host {
-  --calendar-working: #2e7d32;
-  --calendar-weekend: #ef6c00;
-  --calendar-holiday: #c62828;
-  --calendar-leave: #6a1b9a;
-  --calendar-note: #1565c0;
+  --calendar-working: #16a34a;
+  --calendar-weekend: #64748b;
+  --calendar-holiday: #d97706;
+  --calendar-leave: #ca8a04;
+  --calendar-compensatory: #2563eb;
+  --calendar-note: #7c3aed;
 
   display: block;
   color: var(--mat-sys-on-surface);
 }
 
 .calendar {
-  max-width: 56rem;
   margin: 0 auto;
-  padding: 1rem;
+  padding: 1rem 1.25rem 1.25rem;
   background: var(--mat-sys-surface);
   border: 1px solid var(--mat-sys-outline-variant);
   border-radius: 0.75rem;
 
-  &__header {
+  // ----- Thanh trên: chú thích trái, điều khiển phải -----
+  &__topbar {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 0.5rem;
-  }
-
-  &__title {
-    text-align: center;
-
-    h2 {
-      margin: 0;
-      font-size: 1.25rem;
-    }
-  }
-
-  &__year-can-chi {
-    margin: 0.15rem 0 0;
-    font-size: 0.85rem;
-    color: var(--mat-sys-on-surface-variant);
-  }
-
-  &__toolbar {
-    display: flex;
-    justify-content: center;
-    margin: 0.25rem 0 0.75rem;
-  }
-
-  &__grid {
-    display: grid;
-    grid-template-columns: repeat(7, minmax(0, 1fr));
-    gap: 0.25rem;
-  }
-
-  &__weekday {
-    padding: 0.4rem 0;
-    text-align: center;
-    font-size: 0.8rem;
-    font-weight: 600;
-    color: var(--mat-sys-on-surface-variant);
-
-    &--sunday {
-      color: var(--mat-sys-error);
-    }
-  }
-
-  &__cell {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.1rem;
-    min-height: 4.5rem;
-    padding: 0.35rem 0.15rem;
-    border: 1px solid var(--mat-sys-outline-variant);
-    border-radius: 0.5rem;
-    background: var(--mat-sys-surface-container-low);
-    color: inherit;
-    font: inherit;
-    cursor: pointer;
-    transition: background 0.15s, border-color 0.15s;
-
-    &:hover {
-      border-color: var(--mat-sys-primary);
-    }
-
-    &--readonly {
-      cursor: default;
-
-      &:hover {
-        border-color: var(--mat-sys-outline-variant);
-      }
-    }
-
-    &--outside {
-      opacity: 0.35;
-    }
-
-    // Hôm nay: viền nổi bật (accent border)
-    &--today {
-      border: 2px solid var(--mat-sys-primary);
-      background: var(--mat-sys-primary-container);
-      color: var(--mat-sys-on-primary-container);
-    }
-  }
-
-  &__solar-day {
-    font-size: 1.15rem;
-    font-weight: 700;
-    line-height: 1.2;
-  }
-
-  &__cell--sunday &__solar-day {
-    color: var(--mat-sys-error);
-  }
-
-  &__lunar-day {
-    font-size: 0.72rem;
-    color: var(--mat-sys-on-surface-variant);
-  }
-
-  &__badge {
-    max-width: 100%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    margin-top: auto;
-    padding: 0.05rem 0.35rem;
-    border-radius: 0.6rem;
-    font-size: 0.62rem;
-    font-weight: 600;
-    color: #fff;
-
-    &--working { background: var(--calendar-working); }
-    &--weekend { background: var(--calendar-weekend); }
-    &--holiday { background: var(--calendar-holiday); }
-    &--leave   { background: var(--calendar-leave); }
-    &--note    { background: var(--calendar-note); }
+    flex-wrap: wrap;
+    gap: 0.5rem 1rem;
+    margin-bottom: 0.9rem;
   }
 
   &__legend {
     display: flex;
     flex-wrap: wrap;
-    justify-content: center;
-    gap: 0.75rem;
-    margin-top: 0.75rem;
-    font-size: 0.75rem;
+    align-items: center;
+    gap: 0.35rem 1rem;
+    font-size: 0.78rem;
     color: var(--mat-sys-on-surface-variant);
   }
 
   &__legend-item {
     display: inline-flex;
     align-items: center;
-    gap: 0.3rem;
+    gap: 0.35rem;
   }
 
   &__legend-dot {
-    width: 0.7rem;
-    height: 0.7rem;
+    width: 0.55rem;
+    height: 0.55rem;
     border-radius: 50%;
 
-    &--sunday { background: var(--mat-sys-error); }
-    &--today {
-      background: var(--mat-sys-primary-container);
-      border: 2px solid var(--mat-sys-primary);
+    &--working      { background: var(--calendar-working); }
+    &--weekend      { background: var(--calendar-weekend); }
+    &--holiday      { background: var(--calendar-holiday); }
+    &--leave        { background: var(--calendar-leave); }
+    &--compensatory { background: var(--calendar-compensatory); }
+    &--note         { background: var(--calendar-note); }
+  }
+
+  &__controls {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  &__title-wrap {
+    position: relative;
+  }
+
+  &__title-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.3rem 0.5rem;
+    border: none;
+    border-radius: 0.5rem;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+
+    &:hover {
+      background: var(--mat-sys-surface-container);
     }
-    &--holiday { background: var(--calendar-holiday); }
-    &--note { background: var(--calendar-note); }
+  }
+
+  &__title-text {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    line-height: 1.25;
+
+    strong {
+      font-size: 1.05rem;
+      white-space: nowrap;
+    }
+
+    small {
+      font-size: 0.72rem;
+      font-weight: 400;
+      color: var(--mat-sys-on-surface-variant);
+    }
+  }
+
+  &__caret {
+    font-size: 0.8rem;
+    color: var(--mat-sys-on-surface-variant);
+    transition: transform 0.15s;
+
+    &--open {
+      transform: rotate(180deg);
+    }
+  }
+
+  // ----- Month picker -----
+  &__picker-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 20;
+  }
+
+  &__picker {
+    position: absolute;
+    top: calc(100% + 0.35rem);
+    right: 0;
+    z-index: 21;
+    width: 15rem;
+    padding: 0.6rem;
+    background: var(--mat-sys-surface-container-lowest, var(--mat-sys-surface));
+    border: 1px solid var(--mat-sys-outline-variant);
+    border-radius: 0.75rem;
+    box-shadow: 0 0.5rem 1.5rem rgba(15, 23, 42, 0.18);
+  }
+
+  &__picker-year {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.4rem;
+  }
+
+  &__picker-months {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.3rem;
+  }
+
+  &__picker-month {
+    padding: 0.45rem 0;
+    border: none;
+    border-radius: 0.5rem;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    font-size: 0.85rem;
+    cursor: pointer;
+
+    &:hover {
+      background: var(--mat-sys-surface-container);
+    }
+
+    &--active {
+      background: var(--mat-sys-primary);
+      color: var(--mat-sys-on-primary);
+    }
+  }
+
+  // ----- Lưới lịch kiểu bảng phẳng -----
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    border: 1px solid var(--mat-sys-outline-variant);
+    border-radius: 0.5rem;
+    overflow: hidden;
+    background: var(--mat-sys-surface);
+  }
+
+  &__weekday {
+    padding: 0.55rem 0;
+    text-align: center;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--mat-sys-on-surface);
+    border-right: 1px solid var(--mat-sys-outline-variant);
+    border-bottom: 1px solid var(--mat-sys-outline-variant);
+  }
+
+  &__cell {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 6.25rem;
+    padding: 0.5rem 0.25rem 0.4rem;
+    border: none;
+    border-right: 1px solid var(--mat-sys-outline-variant);
+    border-bottom: 1px solid var(--mat-sys-outline-variant);
+    background: var(--mat-sys-surface);
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+    transition: background 0.15s;
+
+    &:hover {
+      background: var(--mat-sys-surface-container);
+    }
+
+    &--readonly {
+      cursor: default;
+
+      &:hover {
+        background: var(--mat-sys-surface);
+      }
+    }
+
+    // Ngày lấp của tháng kề: nền xám nhạt, chữ mờ
+    &--outside {
+      background: var(--mat-sys-surface-container-low);
+
+      .calendar__solar-day,
+      .calendar__lunar-day {
+        color: var(--mat-sys-outline);
+      }
+    }
+
+    // Hôm nay: nền xanh nhạt + viền xanh, số ngày trong chấm tròn
+    &--today {
+      background: color-mix(in srgb, var(--mat-sys-primary) 8%, var(--mat-sys-surface));
+      box-shadow: inset 0 0 0 1.5px var(--mat-sys-primary);
+
+      .calendar__solar-day {
+        background: var(--mat-sys-primary);
+        color: var(--mat-sys-on-primary);
+      }
+    }
+  }
+
+  // Cột cuối (CN) bỏ viền phải để không chồng viền container
+  &__weekday:nth-child(7n),
+  &__cell:nth-child(7n) {
+    border-right: none;
+  }
+
+  &__solar-day {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.7rem;
+    height: 1.7rem;
+    padding: 0 0.2rem;
+    border-radius: 1rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    line-height: 1;
+  }
+
+  &__lunar-day {
+    margin-top: 0.05rem;
+    font-size: 0.7rem;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  &__cell-bottom {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin-top: auto;
+    min-height: 1.2rem;
+  }
+
+  // Chip pastel: nền = màu loại ngày pha loãng, chữ = màu loại ngày
+  &__badge {
+    max-width: 95%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    padding: 0.15rem 0.55rem;
+    border-radius: 1rem;
+    font-size: 0.66rem;
+    font-weight: 600;
+
+    &--working      { color: var(--calendar-working); }
+    &--weekend      { color: var(--calendar-weekend); }
+    &--holiday      { color: var(--calendar-holiday); }
+    &--leave        { color: var(--calendar-leave); }
+    &--compensatory { color: var(--calendar-compensatory); }
+    &--note         { color: var(--calendar-note); }
+
+    background: color-mix(in srgb, currentColor 14%, transparent);
+  }
+
+  // "+ Thêm" chỉ hiện khi hover ô trống
+  &__add {
+    visibility: hidden;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--mat-sys-primary);
+  }
+
+  &__cell:hover &__add {
+    visibility: visible;
   }
 }
 
 // Responsive: màn hình hẹp thu gọn ô ngày
-@media (max-width: 480px) {
+@media (max-width: 640px) {
   .calendar {
     padding: 0.6rem;
 
     &__cell {
-      min-height: 3.4rem;
-      border-radius: 0.35rem;
+      min-height: 4rem;
     }
 
     &__solar-day {
-      font-size: 0.95rem;
+      min-width: 1.4rem;
+      height: 1.4rem;
+      font-size: 0.85rem;
     }
 
     &__badge {
       font-size: 0.55rem;
+      padding: 0.1rem 0.35rem;
+    }
+
+    &__weekday {
+      font-size: 0.68rem;
     }
   }
 }
